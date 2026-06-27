@@ -1,0 +1,23 @@
+ <html>
+<head>
+  <script>
+    function openApp() {
+      const params = new URLSearchParams(window.location.search);
+      const companyId = params.get("companyId");
+
+      window.location = `jobb2b://jobs/aktuelle-jobs?companyId=${companyId}`;
+
+      setTimeout(() => {
+        if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+          window.location = "https://apps.apple.com/app/azubi-b2b";
+        } else {
+          window.location = "https://play.google.com/store/apps/details?id=com.azubib2b";
+        }
+      }, 5000);
+    }
+  </script>
+</head>
+<body onload="openApp()">
+  <p>Opening AzubiB2B app…</p>
+</body>
+</html>

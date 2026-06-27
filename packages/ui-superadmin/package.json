@@ -1,0 +1,43 @@
+{
+  "name": "@monorepo/ui-superadmin",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "PORT=3002 next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@monorepo/api-client": "1.0.0",
+    "@monorepo/shared-constants": "1.0.0",
+    "@monorepo/ui-core": "1.0.0",
+    "@mui/material": "^6.1.6",
+    "@svgr/webpack": "^8.1.0",
+    "axios": "^1.7.8",
+    "dayjs": "^1.11.13",
+    "formik": "^2.4.9",
+    "next": "14.0.1",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-toastify": "^10.0.6",
+    "urlcat": "2.0.4",
+    "yup": "^1.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
+    "autoprefixer": "^10.0.1",
+    "eslint": "^8.53.0",
+    "eslint-config-next": "^14.0.1",
+    "postcss": "^8",
+    "prettier": "^3.0.3",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5"
+  }
+}

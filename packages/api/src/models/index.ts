@@ -1,0 +1,90 @@
+import _mediaModel from "./media";
+import _userModel from "./user.template";
+import _userSessionModel from "./userSessionModel";
+import _companyModel from "./company";
+import _jobsModel from "./jobs";
+import _industriesModel from "./industries";
+import _jobTypesModel from "./jobType";
+import _cityModel from "./city";
+import _manageCompanyModel from "./manageCompany";
+import _impressumModel from "./manageImpressum";
+import _jobDocumentModel from "./jobDocument";
+import _jobImagesModel from "./jobImages";
+import _jobBannerModel from "./jobBanner";
+import _applicationModel from "./application";
+import _contactFormModel from "./contactForm";
+import _registerFormModel from "./registerForm";
+import _companyImageModel from "./companyImage";
+import _jobAlarmModel from "./jobAlarm";
+import _applyFormContentModel from "./applyFormContent";
+import _appointmentFormModel from "./appointmentForm";
+import _appointmentContentModel from "./appointmentContent";
+import _faqContentModel from "./faqContent";
+import _aboutContentModel from "./aboutContent";
+import _contactUsContentModel from "./contactUsContent";
+import _homePageModel from "./homePageContent";
+import _sideMenuContentModel from "./manageSideMenuContent";
+import _jobWallContentModel from "./manageJobWallContent";
+import _sideBarContentModel from "./manageSideBar";
+import _alarmContentModel from "./manageAlarm";
+import _tipsContentModel from "./manageTips";
+import _notificationModel from "./notification";
+import _deviceIdModel from "./deviceId";
+import _appColorModel from "./appColor";
+import _iconModel from "./icons";
+import _sideMenuModel from "./sidemenu";
+import _newsModel from "./news";
+import _policyContentModel from "./managePrivacyPolicy";
+import _policyModel from "./superadminPolicies";
+import _meineDatenModel from "./manageMeineDaten";
+import _jobAlarmContentModel from "./jobAlarmContent";
+import _jobFormContentModel from "./jobFormContent";
+
+export const MediaModel = _mediaModel;
+export const UserModel = _userModel;
+export const UserSessionModel = _userSessionModel;
+export const PrivacyPolicyModel = _policyModel;
+export const MeineDatenModel = _meineDatenModel;
+export const JobAlarmContentModel = _jobAlarmContentModel;
+export const JobFormContentModel = _jobFormContentModel;
+
+export const CompanyModel = _companyModel;
+export const ManageCompanyModel = _manageCompanyModel;
+export const ImpressumModel = _impressumModel;
+ 
+export const JobModel = _jobsModel;
+export const IndustryModel = _industriesModel;
+export const JobTypesModel = _jobTypesModel;
+export const CityModel = _cityModel;
+
+export const JobDocumentModel = _jobDocumentModel;
+export const JobImagesModel = _jobImagesModel;
+export const JobBannerModel = _jobBannerModel;
+export const ApplicationModel = _applicationModel;
+export const ContactFormModel = _contactFormModel;
+export const RegisterFormModel = _registerFormModel;
+export const CompanyImageModel = _companyImageModel;
+export const JobAlarmModel = _jobAlarmModel;
+
+export const NewsModel = _newsModel;
+export const ApplyFormContentModel = _applyFormContentModel;
+export const AppointmentFormModel = _appointmentFormModel;
+export const AppointmentContentModel = _appointmentContentModel;
+export const FaqContentModel = _faqContentModel;
+export const AboutContentModel = _aboutContentModel;
+export const ContactUsContentModel = _contactUsContentModel;
+export const HomePageContentModel = _homePageModel;
+export const SideMenuContentModel = _sideMenuContentModel;
+export const JobWallContentModel = _jobWallContentModel;
+export const SideBarContentModel = _sideBarContentModel;
+export const AlarmContentModel = _alarmContentModel;
+export const TipsContentModel = _tipsContentModel;
+export const SideMenuModel = _sideMenuModel;
+
+export const NotificationModel = _notificationModel;
+export const DeviceIdModel = _deviceIdModel;
+
+export const AppColorModel = _appColorModel;
+
+export const IconModel = _iconModel;
+export const PolicyContentModel = _policyContentModel;

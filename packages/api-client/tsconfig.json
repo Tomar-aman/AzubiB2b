@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "outDir": "dist",
+    "composite": true,
+    "target": "es2020",
+    "baseUrl": ".",
+    "paths": {
+      "@monorepo/api/*": ["../api/*"]
+    }
+  },
+  "exclude": ["dist"]
+}
