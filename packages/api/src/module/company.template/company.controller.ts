@@ -122,7 +122,7 @@ class CompanyController {
       const pageNumber = page ? Number(page) : 1;
       const recordsPerPage = recordPerPage ? Number(recordPerPage) : 10;
 
-      const filter: any = { isDeleted: false };
+      const filter: any = { isDeleted: false, source: { $ne: "fachzubi" } };
       if (search) {
         filter.$or = [
           { companyname: { $regex: search, $options: "i" } },
@@ -141,6 +141,7 @@ class CompanyController {
       );
       const totalRecords = await this.companyService.getCount({
         isDeleted: false,
+        source: { $ne: "fachzubi" },
       });
       const totalPages = Math.ceil(totalRecords / recordsPerPage);
 

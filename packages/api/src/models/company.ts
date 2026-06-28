@@ -30,6 +30,9 @@ export interface Company {
   smtpEncryption?: string;
   smtpAddress?: string;
   smtpService?: string;
+  source?: string;
+  fachzubiId?: string;
+  fachzubiMeta?: Record<string, unknown>;
 }
 
 export interface CompanyDocument extends Company, Document {
@@ -51,8 +54,10 @@ const docsData = new Schema({
 const companySchema = new Schema<CompanyDocument>(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User" },
-    companyname: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
+    // NOTE: uniqueness is enforced via partial indexes below (only for
+    // azubi-native companies). Fachzubi companies may share email/name.
+    companyname: { type: String, required: true },
+    email: { type: String, required: true },
     password: { type: String, required: true },
     city: { type: Schema.Types.ObjectId, ref: "City" },
     location: { type: String, required: false },
@@ -87,10 +92,27 @@ const companySchema = new Schema<CompanyDocument>(
     smtpEncryption: { type: String, default: "" },
     smtpAddress: { type: String, default: "" },
     smtpService: { type: String, default: "" },
+    source: { type: String, enum: ["azubi", "fachzubi"], default: "azubi" },
+    fachzubiId: { type: String, default: null },
+    // Snapshot of the full Fachzubi company detail (industry, city, region,
+    // logo URL, gallery images, etc.) shown on the Fachzubi company detail page.
+    fachzubiMeta: { type: Schema.Types.Mixed, default: null },
   },
   {
     timestamps: true,
   },
+);
+
+// Enforce unique email / companyname ONLY for azubi-native companies.
+// Fachzubi-sourced companies are directory entries and may legitimately
+// share an email or name, so they are excluded from these unique indexes.
+companySchema.index(
+  { email: 1 },
+  { unique: true, partialFilterExpression: { source: "azubi" }, name: "email_azubi_unique" },
+);
+companySchema.index(
+  { companyname: 1 },
+  { unique: true, partialFilterExpression: { source: "azubi" }, name: "companyname_azubi_unique" },
 );
 
 companySchema.pre("save", async function (next) {

@@ -189,6 +189,28 @@ export default function Sidebar() {
             </li>
           </Link>
         )}
+        {role !== "Sub-SuperAdmin" && (
+          <Link href="/fachzubi-companies">
+            <li
+              className={
+                router.pathname === "/fachzubi-companies" ? "activeClass" : ""
+              }
+            >
+              <SVG.Admin /> Manage Companies (Fachzubi)
+            </li>
+          </Link>
+        )}
+        {role !== "Sub-SuperAdmin" && (
+          <Link href="/fachzubi-jobs">
+            <li
+              className={
+                router.pathname === "/fachzubi-jobs" ? "activeClass" : ""
+              }
+            >
+              <SVG.Admin /> Manage Jobs (Fachzubi)
+            </li>
+          </Link>
+        )}
         <li onClick={handleLogout}>
           <SVG.Logout />
           Log Out

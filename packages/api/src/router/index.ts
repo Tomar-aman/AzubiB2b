@@ -26,6 +26,8 @@ import iconRoute from "../module_admin/icon.template/icon.routes";
 import newsRoute from "../module_admin/news.template/news.routes";
 import appointmentFormRoute from "../module_admin/appointment.template/appointment.routes";
 import privacyPolicyRoute from "../module_admin/managePolicy.template/policy.routes";
+import syncRoute from "../module_admin/sync.template/sync.routes";
+import fachzubiDataRoute from "../module_admin/sync.template/fachzubiData.routes";
 
 const router = [
   // Super-admin
@@ -142,7 +144,15 @@ const router = [
   {
     prefix: "/admin",
     router: privacyPolicyRoute
-  }
+  },
+  {
+    prefix: "/sync",
+    router: syncRoute,
+  },
+  {
+    prefix: "/super-admin",
+    router: fachzubiDataRoute,
+  },
 ];
 
 export default router;

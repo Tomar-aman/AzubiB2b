@@ -30,6 +30,9 @@ export interface Job {
   isDeleted: boolean;
   deletedAt?: Date;
   isDesktopView?: boolean;
+  source?: string;
+  fachzubiId?: string;
+  fachzubiMeta?: Record<string, unknown>;
 }
 
 export interface JobDocument extends Job, Document {
@@ -87,6 +90,11 @@ const jobSchema = new Schema(
     isDeleted: { type: Boolean, default: false },
     deletedAt: { type: Date, default: null },
     isDesktopView: { type: Boolean, default: false },
+    source: { type: String, enum: ["azubi", "fachzubi"], default: "azubi" },
+    fachzubiId: { type: String, default: null },
+    // Snapshot of Fachzubi-specific job detail (zipCode, video links, city /
+    // industry / region names, etc.) shown on the Fachzubi job detail page.
+    fachzubiMeta: { type: Schema.Types.Mixed, default: null },
   },
   {
     timestamps: true,

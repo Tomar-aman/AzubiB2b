@@ -7,6 +7,7 @@ import * as runtime from "../runtime";
 import { ErrorResult, SuccessResult } from "../runtimeType";
 import { ManageCompanyType } from "./CreateManageCompanyReqResDto";
 import { CreateCityRequestDto, TransformCity } from "./CreateCityReqResDto";
+import axios from "axios";
 
 class _CompanyApi extends runtime.BaseAPI {
   constructor() {
@@ -355,6 +356,86 @@ class _CompanyApi extends runtime.BaseAPI {
       };
     }
     return response as ErrorResult;
+  }
+
+  async toggleFachzubiCompanyStatus(id: string) {
+    try {
+      const token = typeof window !== "undefined" ? window.localStorage.getItem("access-token") : null;
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      const res = await axios.patch(`${baseUrl}/api/v1/super-admin/fachzubi-company/${id}/status`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return { remote: "success" as const, data: res.data };
+    } catch {
+      return { remote: "failure" as const };
+    }
+  }
+
+  async getFachzubiCompanies({ page, recordPerPage }: { page?: number; recordPerPage?: number }) {
+    try {
+      const token = typeof window !== "undefined" ? window.localStorage.getItem("access-token") : null;
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      const res = await axios.get(`${baseUrl}/api/v1/super-admin/fachzubi-companies`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { page, recordPerPage },
+      });
+      return { remote: "success" as const, data: res.data };
+    } catch {
+      return { remote: "success" as const, data: { companies: [], pagination: { totalPages: 1 } } };
+    }
+  }
+
+  async getFachzubiCompany(id: string) {
+    try {
+      const token = typeof window !== "undefined" ? window.localStorage.getItem("access-token") : null;
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      const res = await axios.get(`${baseUrl}/api/v1/super-admin/fachzubi-company/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return { remote: "success" as const, data: res.data?.company ?? null };
+    } catch {
+      return { remote: "failure" as const, data: null };
+    }
+  }
+
+  async getFachzubiJobs({ page, recordPerPage }: { page?: number; recordPerPage?: number }) {
+    try {
+      const token = typeof window !== "undefined" ? window.localStorage.getItem("access-token") : null;
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      const res = await axios.get(`${baseUrl}/api/v1/super-admin/fachzubi-jobs`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { page, recordPerPage },
+      });
+      return { remote: "success" as const, data: res.data };
+    } catch {
+      return { remote: "success" as const, data: { jobs: [], pagination: { totalPages: 1 } } };
+    }
+  }
+
+  async getFachzubiJob(id: string) {
+    try {
+      const token = typeof window !== "undefined" ? window.localStorage.getItem("access-token") : null;
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      const res = await axios.get(`${baseUrl}/api/v1/super-admin/fachzubi-job/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return { remote: "success" as const, data: res.data?.job ?? null };
+    } catch {
+      return { remote: "failure" as const, data: null };
+    }
+  }
+
+  async toggleFachzubiJobStatus(id: string) {
+    try {
+      const token = typeof window !== "undefined" ? window.localStorage.getItem("access-token") : null;
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      const res = await axios.patch(`${baseUrl}/api/v1/super-admin/fachzubi-job/${id}/status`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return { remote: "success" as const, data: res.data };
+    } catch {
+      return { remote: "failure" as const };
+    }
   }
 }
 export const CompanyApi = new _CompanyApi();
