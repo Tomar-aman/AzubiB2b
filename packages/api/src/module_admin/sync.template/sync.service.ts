@@ -58,6 +58,8 @@ export interface FachzubiJobPayload {
   industryNames?: string[];
   industryName?: string;
   regionName?: string;
+  jobImages?: string[];
+  attachments?: Array<{ file: string; fileName?: string; type?: string }>;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -230,7 +232,17 @@ export class SyncService {
       industryName: data.industryName ?? industryNames.join(", "),
       regionName: data.regionName ?? "",
       additionalEmail: data.additionalEmail ?? "",
+      attachments: Array.isArray(data.attachments) ? data.attachments : [],
     };
+
+    const jobImages = Array.isArray(data.jobImages)
+      ? data.jobImages.map((file) => ({ file }))
+      : [];
+    const attachement = Array.isArray(data.attachments)
+      ? data.attachments
+          .filter((a) => a?.file)
+          .map((a) => ({ file: a.file }))
+      : [];
 
     const jobFields: Record<string, unknown> = {
       jobTitle: data.jobTitle,
@@ -240,6 +252,8 @@ export class SyncService {
       locationField: data.address ?? "",
       jobDescription: data.jobDescription ?? "",
       videoLink: Array.isArray(data.videoLink) ? data.videoLink.join(", ") : "",
+      jobImages,
+      attachement,
       phoneNumber: "",
       status: typeof data.status === "boolean" ? data.status : true,
       source: "fachzubi",

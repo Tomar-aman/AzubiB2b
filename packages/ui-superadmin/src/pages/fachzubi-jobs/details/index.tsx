@@ -25,6 +25,7 @@ interface FachzubiJobMeta {
   industryName?: string;
   regionName?: string;
   additionalEmail?: string;
+  attachments?: Array<{ file?: string; fileName?: string; type?: string }>;
 }
 
 interface JobDetail {
@@ -43,6 +44,8 @@ interface JobDetail {
   companyId?: { companyname?: string; email?: string; profileIcon?: string } | null;
   city?: { name?: string }[];
   industryName?: { industryName?: string } | null;
+  jobImages?: { file?: string }[];
+  attachement?: { file?: string }[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -122,6 +125,15 @@ export default function FachzubiJobDetails() {
         ? meta.cityNames
         : [];
   const industryName = job?.industryName?.industryName || meta.industryName || "";
+  const jobImages = (Array.isArray(job?.jobImages) ? job!.jobImages : [])
+    .map((i) => i?.file)
+    .filter(Boolean) as string[];
+  const attachments =
+    Array.isArray(meta.attachments) && meta.attachments.length
+      ? meta.attachments
+      : (Array.isArray(job?.attachement) ? job!.attachement : []).map((a) => ({
+          file: a?.file,
+        }));
 
   return (
     <DashboardStyled>
@@ -229,6 +241,50 @@ export default function FachzubiJobDetails() {
                           {videoLinks.map((v, i) => (
                             <MuiLink key={i} href={v} target="_blank" rel="noreferrer" sx={{ wordBreak: "break-all" }}>
                               {v}
+                            </MuiLink>
+                          ))}
+                        </Box>
+                      </SectionCard>
+                    </Grid>
+                  )}
+
+                  {jobImages.length > 0 && (
+                    <Grid item xs={12}>
+                      <SectionCard title={`Job Images (${jobImages.length})`}>
+                        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
+                          {jobImages.map((img, i) => (
+                            <Box
+                              key={i}
+                              component="img"
+                              src={img}
+                              alt={`job-${i}`}
+                              sx={{
+                                width: 160,
+                                height: 120,
+                                objectFit: "cover",
+                                borderRadius: 1.5,
+                                border: "1px solid #eee",
+                              }}
+                            />
+                          ))}
+                        </Box>
+                      </SectionCard>
+                    </Grid>
+                  )}
+
+                  {attachments.length > 0 && (
+                    <Grid item xs={12}>
+                      <SectionCard title={`Attachments (${attachments.length})`}>
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                          {attachments.map((a, i) => (
+                            <MuiLink
+                              key={i}
+                              href={a.file}
+                              target="_blank"
+                              rel="noreferrer"
+                              sx={{ wordBreak: "break-all", fontFamily: "Poppins", fontSize: 14 }}
+                            >
+                              {(a as { fileName?: string }).fileName || a.file}
                             </MuiLink>
                           ))}
                         </Box>
