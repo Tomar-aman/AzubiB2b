@@ -308,6 +308,69 @@ export class SyncService {
     return company;
   }
 
+  /**
+   * Edit a Fachzubi company from the AzubiB2B superadmin. Only a fixed set of
+   * display fields is editable; updateOne (not .save()) is used so we don't run
+   * full-document validation against AzubiB2B-required fields the synced doc may
+   * be missing. Note: a later re-sync from Fachzubi will overwrite these edits.
+   */
+  public async updateFachzubiCompanyById(
+    id: string,
+    data: Record<string, any>,
+  ) {
+    const editable = [
+      "companyname",
+      "email",
+      "contactPerson",
+      "phoneNumber",
+      "location",
+      "description",
+      "websiteLink",
+      "profileIcon",
+      "instagram",
+      "twitter",
+      "facebook",
+      "status",
+      "companyImages",
+    ];
+    const update: Record<string, unknown> = {};
+    for (const key of editable) {
+      if (data[key] !== undefined) update[key] = data[key];
+    }
+
+    // Merge fachzubiMeta so we never clobber keys we don't edit, and never
+    // $set a dotted path on a null parent (fachzubiMeta defaults to null).
+    if (data.fachzubiMeta && typeof data.fachzubiMeta === "object") {
+      const existing = await CompanyModel.findOne(
+        { _id: id, source: "fachzubi" },
+        { fachzubiMeta: 1 },
+      ).lean();
+      const currentMeta = (existing?.fachzubiMeta as Record<string, unknown>) ?? {};
+      update.fachzubiMeta = { ...currentMeta, ...data.fachzubiMeta };
+    }
+
+    if (Object.keys(update).length > 0) {
+      update.updatedAt = new Date();
+      await CompanyModel.updateOne(
+        { _id: id, source: "fachzubi" },
+        { $set: update },
+      );
+    }
+    return CompanyModel.findOne({ _id: id, source: "fachzubi" })
+      .select("-password")
+      .populate("city", "name address")
+      .populate("industryName", "industryName");
+  }
+
+  /** Soft-delete a Fachzubi company from the AzubiB2B superadmin (by local _id). */
+  public async deleteFachzubiCompanyById(id: string) {
+    const res = await CompanyModel.updateOne(
+      { _id: id, source: "fachzubi" },
+      { $set: { isDeleted: true, deletedAt: new Date() } },
+    );
+    return res.modifiedCount > 0 ? { _id: id } : null;
+  }
+
   public async deleteJob(fachzubiId: string) {
     // updateOne (not .save()) so we don't trigger full-document validation on
     // synced jobs that may be missing AzubiB2B-required fields.
@@ -324,6 +387,75 @@ export class SyncService {
     const newStatus = !job.status;
     await JobModel.updateOne({ _id: id }, { $set: { status: newStatus } });
     return { _id: id, status: newStatus };
+  }
+
+  /**
+   * Edit a Fachzubi job from the AzubiB2B superadmin. Only display fields are
+   * editable; updateOne avoids full-document validation. Note: a later re-sync
+   * from Fachzubi will overwrite these edits.
+   */
+  public async updateFachzubiJobById(
+    id: string,
+    data: Record<string, any>,
+  ) {
+    const editable = [
+      "jobTitle",
+      "email",
+      "additionalEmail",
+      "address",
+      "jobDescription",
+      "phoneNumber",
+      "status",
+      "jobImages",
+      "attachement",
+    ];
+    const update: Record<string, unknown> = {};
+    for (const key of editable) {
+      if (data[key] !== undefined) update[key] = data[key];
+    }
+    // keep locationField mirrored with address (same as the sync upsert)
+    if (data.address !== undefined) update.locationField = data.address;
+    if (data.startDate !== undefined) {
+      update.startDate = data.startDate
+        ? new Date(data.startDate as string)
+        : null;
+    }
+
+    // Merge fachzubiMeta (safe against a null parent) and mirror the top-level
+    // videoLink string the way the sync upsert stores it.
+    if (data.fachzubiMeta && typeof data.fachzubiMeta === "object") {
+      const existing = await JobModel.findOne(
+        { _id: id, source: "fachzubi" },
+        { fachzubiMeta: 1 },
+      ).lean();
+      const currentMeta = (existing?.fachzubiMeta as Record<string, unknown>) ?? {};
+      const mergedMeta = { ...currentMeta, ...data.fachzubiMeta };
+      update.fachzubiMeta = mergedMeta;
+      if (Array.isArray(data.fachzubiMeta.videoLink)) {
+        update.videoLink = data.fachzubiMeta.videoLink.join(", ");
+      }
+    }
+
+    if (Object.keys(update).length > 0) {
+      update.updatedAt = new Date();
+      await JobModel.updateOne(
+        { _id: id, source: "fachzubi" },
+        { $set: update },
+      );
+    }
+    return JobModel.findOne({ _id: id, source: "fachzubi" })
+      .populate("companyId", "companyname email")
+      .populate("city", "name")
+      .populate("industryName", "industryName");
+  }
+
+  /** Soft-delete a Fachzubi job from the AzubiB2B superadmin (by local _id). */
+  public async deleteFachzubiJobById(id: string) {
+    const res = await JobModel.updateOne(
+      { _id: id, source: "fachzubi" },
+      { $set: { isDeleted: true, deletedAt: new Date() } },
+    );
+    return res.modifiedCount > 0 ? { _id: id } : null;
   }
 
   public async getFachzubiJobById(id: string) {

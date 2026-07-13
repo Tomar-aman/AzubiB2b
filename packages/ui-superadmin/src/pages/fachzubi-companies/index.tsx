@@ -16,6 +16,10 @@ import {
   Tooltip,
   Switch,
   Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Stack,
   Button,
 } from "@mui/material";
 import { useRouter } from "next/router";
@@ -54,6 +58,11 @@ function FachzubiCompanies() {
   const [selectedQr, setSelectedQr] = useState("");
   const [selectedName, setSelectedName] = useState("");
 
+  // Delete dialog
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<FachzubiCompany | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   const fetchCompanies = async (p: number, rpp: number) => {
     setLoading(true);
     const response: any = await CompanyApi.getFachzubiCompanies({ page: p, recordPerPage: rpp });
@@ -77,6 +86,29 @@ function FachzubiCompanies() {
       );
     }
     setTogglingId(null);
+  };
+
+  const handleOpenEdit = (company: FachzubiCompany) => {
+    router.push(`/fachzubi-companies/edit?id=${company._id}`);
+  };
+
+  const handleOpenDelete = (company: FachzubiCompany) => {
+    setDeleteTarget(company);
+    setDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
+    const res: any = await CompanyApi.deleteFachzubiCompany(deleteTarget._id);
+    if (res?.remote === "success") {
+      setCompanies((prev) => prev.filter((c) => c._id !== deleteTarget._id));
+      setDeleteOpen(false);
+      setDeleteTarget(null);
+    } else {
+      alert("Failed to delete company.");
+    }
+    setDeleteLoading(false);
   };
 
   const handleOpenQr = (name: string, qr: string) => {
@@ -120,7 +152,7 @@ function FachzubiCompanies() {
         <Box className="dashboardContent">
           <Box sx={{ p: 4 }}>
             <Typography variant="h5" sx={{ mb: 2 }} className="title">
-              Manage Companies (Fachzubi)
+              Manage Companies (FZ)
             </Typography>
 
             <Box className="searchTag">
@@ -145,12 +177,12 @@ function FachzubiCompanies() {
                       <TableCell sx={{ width: "6%" }}>ID</TableCell>
                       <TableCell sx={{ width: "10%" }}>Date</TableCell>
                       <TableCell sx={{ width: "16%" }}>Company Name</TableCell>
-                      <TableCell sx={{ width: "17%" }}>Email</TableCell>
-                      <TableCell sx={{ width: "12%" }}>Phone</TableCell>
-                      <TableCell sx={{ width: "10%" }}>Status</TableCell>
-                      <TableCell sx={{ width: "8%" }}>Active</TableCell>
-                      <TableCell sx={{ width: "11%" }}>Qr Code</TableCell>
-                      <TableCell sx={{ width: "8%" }}>View</TableCell>
+                      <TableCell sx={{ width: "15%" }}>Email</TableCell>
+                      <TableCell sx={{ width: "10%" }}>Phone</TableCell>
+                      <TableCell sx={{ width: "9%" }}>Status</TableCell>
+                      <TableCell sx={{ width: "7%" }}>Active</TableCell>
+                      <TableCell sx={{ width: "9%" }}>Qr Code</TableCell>
+                      <TableCell sx={{ width: "13%" }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody className="tbody">
@@ -208,17 +240,37 @@ function FachzubiCompanies() {
                             )}
                           </TableCell>
                           <TableCell>
-                            <Tooltip title="View Details">
-                              <IconButton
-                                size="small"
-                                onClick={() =>
-                                  router.push(`/fachzubi-companies/details?id=${company._id}`)
-                                }
-                                sx={{ color: "#1976d2" }}
-                              >
-                                <SVG.Eye />
-                              </IconButton>
-                            </Tooltip>
+                            <Stack direction="row" spacing={0.5} alignItems="center">
+                              <Tooltip title="View Details">
+                                <IconButton
+                                  size="small"
+                                  onClick={() =>
+                                    router.push(`/fachzubi-companies/details?id=${company._id}`)
+                                  }
+                                  sx={{ color: "#1976d2" }}
+                                >
+                                  <SVG.Eye />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Edit">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleOpenEdit(company)}
+                                  sx={{ color: "#0096A4" }}
+                                >
+                                  <SVG.Pencil />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Delete">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleOpenDelete(company)}
+                                  sx={{ color: "#d32f2f" }}
+                                >
+                                  <SVG.Delete />
+                                </IconButton>
+                              </Tooltip>
+                            </Stack>
                           </TableCell>
                         </TableRow>
                       ))
@@ -297,6 +349,32 @@ function FachzubiCompanies() {
               </Button>
             </Box>
           </Box>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)} maxWidth="xs" fullWidth>
+          <DialogTitle sx={{ fontFamily: "Poppins", fontWeight: 600 }}>Delete Company?</DialogTitle>
+          <DialogContent>
+            <Typography sx={{ fontFamily: "Poppins", fontSize: 14, color: "#555" }}>
+              Are you sure you want to delete{" "}
+              <strong>{deleteTarget?.companyname}</strong>? This removes it from the
+              AzubiB2B list.
+            </Typography>
+          </DialogContent>
+          <DialogActions sx={{ p: 2 }}>
+            <Button onClick={() => setDeleteOpen(false)} disabled={deleteLoading} sx={{ textTransform: "none" }}>
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleConfirmDelete}
+              disabled={deleteLoading}
+              sx={{ textTransform: "none" }}
+            >
+              {deleteLoading ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogActions>
         </Dialog>
       </MainLayout>
     </DashboardStyled>

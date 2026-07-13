@@ -196,7 +196,7 @@ export default function Sidebar() {
                 router.pathname === "/fachzubi-companies" ? "activeClass" : ""
               }
             >
-              <SVG.Admin /> Manage Companies (Fachzubi)
+              <SVG.Admin /> Manage Companies (FZ)
             </li>
           </Link>
         )}
@@ -207,7 +207,7 @@ export default function Sidebar() {
                 router.pathname === "/fachzubi-jobs" ? "activeClass" : ""
               }
             >
-              <SVG.Admin /> Manage Jobs (Fachzubi)
+              <SVG.Admin /> Manage Jobs (FZ)
             </li>
           </Link>
         )}

@@ -25,7 +25,8 @@ export default function Header() {
   return (
     <Box className="header">
       <Box sx={{ position: "relative", display: "flex", alignItems: "center", width: "100%" }}>
-        <SVG.Slide onClick={handleClick} style={{ margin: "30px 18px", cursor: "pointer" }} />
+        {/* Sidebar toggle icon commented out per request */}
+        {/* <SVG.Slide onClick={handleClick} style={{ margin: "30px 18px", cursor: "pointer" }} /> */}
         {/* <Box sx={{ width: "100%" }}>
           <Box className="toggleButton" onClick={()=>setShow(!show)}>
             <span>A</span>

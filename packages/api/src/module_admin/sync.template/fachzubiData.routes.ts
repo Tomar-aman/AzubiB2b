@@ -6,6 +6,12 @@ const fachzubiDataRoute = express.Router();
 const syncController = new SyncController();
 const authMiddleware = new AuthMiddleware();
 
+fachzubiDataRoute.post(
+  "/fachzubi-upload",
+  authMiddleware.protect,
+  syncController.uploadFachzubiFiles,
+);
+
 fachzubiDataRoute.get(
   "/fachzubi-companies",
   authMiddleware.protect,
@@ -30,6 +36,18 @@ fachzubiDataRoute.patch(
   syncController.toggleJobStatus,
 );
 
+fachzubiDataRoute.put(
+  "/fachzubi-job/:id",
+  authMiddleware.protect,
+  syncController.updateFachzubiJob,
+);
+
+fachzubiDataRoute.delete(
+  "/fachzubi-job/:id",
+  authMiddleware.protect,
+  syncController.deleteFachzubiJobById,
+);
+
 fachzubiDataRoute.get(
   "/fachzubi-company/:id",
   authMiddleware.protect,
@@ -40,6 +58,18 @@ fachzubiDataRoute.patch(
   "/fachzubi-company/:id/status",
   authMiddleware.protect,
   syncController.toggleCompanyStatus,
+);
+
+fachzubiDataRoute.put(
+  "/fachzubi-company/:id",
+  authMiddleware.protect,
+  syncController.updateFachzubiCompany,
+);
+
+fachzubiDataRoute.delete(
+  "/fachzubi-company/:id",
+  authMiddleware.protect,
+  syncController.deleteFachzubiCompanyById,
 );
 
 export default fachzubiDataRoute;

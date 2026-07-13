@@ -15,6 +15,12 @@ import {
   IconButton,
   Tooltip,
   Switch,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Stack,
+  Button,
 } from "@mui/material";
 import { useRouter } from "next/router";
 import dayjs from "dayjs";
@@ -46,6 +52,11 @@ function FachzubiJobs() {
   const [searchValue, setSearchValue] = useState("");
   const [togglingId, setTogglingId] = useState<string | null>(null);
 
+  // Delete dialog
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<FachzubiJob | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   const fetchJobs = async (page: number, recordPerPage: number) => {
     setLoading(true);
     const response: any = await CompanyApi.getFachzubiJobs({
@@ -70,6 +81,29 @@ function FachzubiJobs() {
     setTogglingId(null);
   };
 
+  const handleOpenEdit = (job: FachzubiJob) => {
+    router.push(`/fachzubi-jobs/edit?id=${job._id}`);
+  };
+
+  const handleOpenDelete = (job: FachzubiJob) => {
+    setDeleteTarget(job);
+    setDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
+    const res: any = await CompanyApi.deleteFachzubiJob(deleteTarget._id);
+    if (res?.remote === "success") {
+      setJobs((prev) => prev.filter((j) => j._id !== deleteTarget._id));
+      setDeleteOpen(false);
+      setDeleteTarget(null);
+    } else {
+      alert("Failed to delete job.");
+    }
+    setDeleteLoading(false);
+  };
+
   useEffect(() => {
     fetchJobs(page, rowsPerPage);
   }, [page, rowsPerPage]);
@@ -87,7 +121,7 @@ function FachzubiJobs() {
         <Box className="dashboardContent">
           <Box sx={{ p: 4 }}>
             <Typography variant="h5" sx={{ mb: 2 }} className="title">
-              Manage Jobs (Fachzubi)
+              Manage Jobs (FZ)
             </Typography>
 
             <Box className="searchTag">
@@ -113,11 +147,11 @@ function FachzubiJobs() {
                       <TableCell sx={{ width: "10%" }}>Date</TableCell>
                       <TableCell sx={{ width: "16%" }}>Job Title</TableCell>
                       <TableCell sx={{ width: "15%" }}>Company</TableCell>
-                      <TableCell sx={{ width: "16%" }}>Email</TableCell>
-                      <TableCell sx={{ width: "11%" }}>Start Date</TableCell>
-                      <TableCell sx={{ width: "10%" }}>Status</TableCell>
-                      <TableCell sx={{ width: "8%" }}>Active</TableCell>
-                      <TableCell sx={{ width: "7%" }}>View</TableCell>
+                      <TableCell sx={{ width: "14%" }}>Email</TableCell>
+                      <TableCell sx={{ width: "10%" }}>Start Date</TableCell>
+                      <TableCell sx={{ width: "9%" }}>Status</TableCell>
+                      <TableCell sx={{ width: "7%" }}>Active</TableCell>
+                      <TableCell sx={{ width: "13%" }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody className="tbody">
@@ -170,17 +204,37 @@ function FachzubiJobs() {
                             </Tooltip>
                           </TableCell>
                           <TableCell>
-                            <Tooltip title="View Details">
-                              <IconButton
-                                size="small"
-                                onClick={() =>
-                                  router.push(`/fachzubi-jobs/details?id=${job._id}`)
-                                }
-                                sx={{ color: "#1976d2" }}
-                              >
-                                <SVG.Eye />
-                              </IconButton>
-                            </Tooltip>
+                            <Stack direction="row" spacing={0.5} alignItems="center">
+                              <Tooltip title="View Details">
+                                <IconButton
+                                  size="small"
+                                  onClick={() =>
+                                    router.push(`/fachzubi-jobs/details?id=${job._id}`)
+                                  }
+                                  sx={{ color: "#1976d2" }}
+                                >
+                                  <SVG.Eye />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Edit">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleOpenEdit(job)}
+                                  sx={{ color: "#0096A4" }}
+                                >
+                                  <SVG.Pencil />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Delete">
+                                <IconButton
+                                  size="small"
+                                  onClick={() => handleOpenDelete(job)}
+                                  sx={{ color: "#d32f2f" }}
+                                >
+                                  <SVG.Delete />
+                                </IconButton>
+                              </Tooltip>
+                            </Stack>
                           </TableCell>
                         </TableRow>
                       ))
@@ -205,6 +259,32 @@ function FachzubiJobs() {
             />
           </Box>
         </Box>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)} maxWidth="xs" fullWidth>
+          <DialogTitle sx={{ fontFamily: "Poppins", fontWeight: 600 }}>Delete Job?</DialogTitle>
+          <DialogContent>
+            <Typography sx={{ fontFamily: "Poppins", fontSize: 14, color: "#555" }}>
+              Are you sure you want to delete{" "}
+              <strong>{deleteTarget?.jobTitle}</strong>? This removes it from the
+              AzubiB2B list.
+            </Typography>
+          </DialogContent>
+          <DialogActions sx={{ p: 2 }}>
+            <Button onClick={() => setDeleteOpen(false)} disabled={deleteLoading} sx={{ textTransform: "none" }}>
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleConfirmDelete}
+              disabled={deleteLoading}
+              sx={{ textTransform: "none" }}
+            >
+              {deleteLoading ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogActions>
+        </Dialog>
       </MainLayout>
     </DashboardStyled>
   );

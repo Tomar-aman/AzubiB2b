@@ -437,5 +437,89 @@ class _CompanyApi extends runtime.BaseAPI {
       return { remote: "failure" as const };
     }
   }
+
+  async updateFachzubiCompany(
+    id: string,
+    payload: Record<string, any>,
+  ) {
+    try {
+      const token = typeof window !== "undefined" ? window.localStorage.getItem("access-token") : null;
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      const res = await axios.put(`${baseUrl}/api/v1/super-admin/fachzubi-company/${id}`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return { remote: "success" as const, data: res.data };
+    } catch {
+      return { remote: "failure" as const };
+    }
+  }
+
+  async deleteFachzubiCompany(id: string) {
+    try {
+      const token = typeof window !== "undefined" ? window.localStorage.getItem("access-token") : null;
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      const res = await axios.delete(`${baseUrl}/api/v1/super-admin/fachzubi-company/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return { remote: "success" as const, data: res.data };
+    } catch {
+      return { remote: "failure" as const };
+    }
+  }
+
+  async updateFachzubiJob(
+    id: string,
+    payload: Record<string, any>,
+  ) {
+    try {
+      const token = typeof window !== "undefined" ? window.localStorage.getItem("access-token") : null;
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      const res = await axios.put(`${baseUrl}/api/v1/super-admin/fachzubi-job/${id}`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return { remote: "success" as const, data: res.data };
+    } catch {
+      return { remote: "failure" as const };
+    }
+  }
+
+  async deleteFachzubiJob(id: string) {
+    try {
+      const token = typeof window !== "undefined" ? window.localStorage.getItem("access-token") : null;
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      const res = await axios.delete(`${baseUrl}/api/v1/super-admin/fachzubi-job/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return { remote: "success" as const, data: res.data };
+    } catch {
+      return { remote: "failure" as const };
+    }
+  }
+
+  /**
+   * Uploads image or document files for a Fachzubi edit and returns their
+   * absolute URLs: { files: [{ file, fileName, type }] }.
+   */
+  async uploadFachzubiFiles(files: File[], type: "image" | "document") {
+    try {
+      const token = typeof window !== "undefined" ? window.localStorage.getItem("access-token") : null;
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      const fd = new FormData();
+      files.forEach((f) => fd.append("files", f));
+      const res = await axios.post(
+        `${baseUrl}/api/v1/super-admin/fachzubi-upload?type=${type}`,
+        fd,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      );
+      return { remote: "success" as const, data: res.data };
+    } catch {
+      return { remote: "failure" as const };
+    }
+  }
 }
 export const CompanyApi = new _CompanyApi();
